@@ -10,6 +10,7 @@ import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 
 import javax.jms.*;
+import java.util.Map;
 
 /**
  * @author nate-pt
@@ -80,15 +81,21 @@ public class Apis {
         System.out.println("数据入es中");
         TransportClient client = ConnUtil.getClient();
 
-        XContentBuilder source = XContentFactory.jsonBuilder().startObject().
-                field("id",messageBean.getId())
-                .field("age",messageBean.getAge())
-                .field("content",messageBean.getContent()).endObject();
+//        XContentBuilder source = XContentFactory.jsonBuilder().startObject().
+//                field("id",messageBean.getId())
+//                .field("age",messageBean.getAge())
+//                .field("content",messageBean.getContent()).endObject();
 
-        IndexResponse indexResponse = client.prepareIndex(INDEXANDTYPENAME, INDEXANDTYPENAME, "1").setSource(source).get();
+        Map<String,Object> map = JSON.parseObject(JSON.toJSONString(messageBean), Map.class);
+
+        XContentBuilder source = XContentFactory.smileBuilder().map(map);
+
+        IndexResponse indexResponse = client.prepareIndex(INDEXANDTYPENAME, INDEXANDTYPENAME, "3").setSource(source).get();
 
         System.out.println(indexResponse);
     }
+
+
 
 
 }
